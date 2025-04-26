@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Orders</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            background-color: #343a40;
+        }
+
+        .table thead th {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .table tbody tr:hover {
+            background-color: #cce5ff;
+            cursor: pointer;
+        }
+
+        .user-icon {
+            color: #fff;
+            margin-right: 5px;
+        }
+
+        .container h1 {
+            margin-top: 20px;
+            margin-bottom: 40px;
+            color: #343a40;
+        }
+
+        .table td a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .table td a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Your Logo</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-user user-icon"></i>{{user.seller.name}}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="text-center mb-5">Purchase Orders</h1>
+        <div class="row">
+            <div class="col-md-12">
+                <div style="border: 1px solid rgba(0, 0, 0, 0.125); border-radius: 0.25rem; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);">
+                    <div style="padding: 1.25rem;">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Order Number</th>
+                                    <th>Date</th>
+                                    <th>Total Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for purchase_order in purchase_orders %}
+                                    {% if purchase_order.Status != 'Not Initiated' and purchase_order.Status != 'Rejected' %}
+                                        <tr onclick="window.location='{% url 'purchase_order_details' purchase_order.id %}'">
+                                            <td>{{ purchase_order.id }}</td>
+                                            <td>{{ purchase_order.PurchaseOrderDate }}</td>
+                                            <td>Rs:{{ purchase_order.TotalAmount }}</td>
+                                            <td><a href="{% url 'purchase_order_details' purchase_order.id %}">{{ purchase_order.Status }}</a></td>
+                                            <td>
+                                                <a href="{% url 'purchase_order_details' purchase_order.id %}">View Details</a>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

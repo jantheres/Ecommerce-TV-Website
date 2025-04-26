@@ -1,0 +1,141 @@
+{% extends 'base2.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Exchange Details</h4>
+                    <span class="badge bg-light text-primary px-3 py-2">Status: {{ exchange.status|title }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6 border-end">
+                            <h5 class="text-primary mb-4">Old TV Details</h5>
+                            <div class="table-responsive">
+                                <table class="table table-borderless">
+                                    <tbody>
+                                        <tr>
+                                            <th class="text-muted" style="width: 40%">Brand:</th>
+                                            <td>{{ exchange.brand }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted">Model:</th>
+                                            <td>{{ exchange.model }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted">Screen Size:</th>
+                                            <td>{{ exchange.screen_size }} inches</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted">Age:</th>
+                                            <td>{{ exchange.age_in_years }} years</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted">Condition:</th>
+                                            <td>{{ exchange.condition|title }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted">Original Price:</th>
+                                            <td>₹{{ exchange.original_price }}</td>
+                                        </tr>
+                                        <tr class="table-success">
+                                            <th class="text-success">Exchange Value:</th>
+                                            <td class="text-success fw-bold">₹{{ exchange.exchange_value }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="text-primary mb-4">New TV Details</h5>
+                            <div class="card border-0 shadow-sm">
+                                <img src="{{ exchange.product.image_1.url }}" class="card-img-top p-3" alt="{{ exchange.product.name }}" style="object-fit: contain; height: 300px;">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ exchange.product.name }}</h6>
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                        <div>
+                                            <p class="text-muted mb-0">Original Price</p>
+                                            <h5 class="text-primary mb-0">₹{{ exchange.product.price }}</h5>
+                                        </div>
+                                        <div class="text-end">
+                                            <p class="text-muted mb-0">After Exchange</p>
+                                            <h5 class="text-success mb-0">₹{{ exchange.product.price|sub:exchange.exchange_value }}</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-4 border-success">
+                        <div class="card-body">
+                            <h5 class="text-success mb-3">Final Price Calculation</h5>
+                            <div class="row">
+                                <div class="col-md-8 mx-auto">
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <td>New TV Price:</td>
+                                            <td class="text-end">₹{{ exchange.product.price }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Exchange Value:</td>
+                                            <td class="text-end text-success">- ₹{{ exchange.exchange_value }}</td>
+                                        </tr>
+                                        <tr class="border-top">
+                                            <td class="fw-bold">Final Amount to Pay:</td>
+                                            <td class="text-end fw-bold">₹{{ exchange.product.price|sub:exchange.exchange_value }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <form method="POST" action="{% url 'exchange_checkout' exchange.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="exchange_value" value="{{ exchange.exchange_value }}">
+                        <input type="hidden" name="product_id" value="{{ exchange.product.id }}">
+                        <button type="submit" class="btn btn-success btn-lg px-5">
+                            Proceed to Checkout (₹{{ exchange.product.price|sub:exchange.exchange_value }})
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        {% if exchange.status == 'pending_pickup' %}
+                            <form method="POST" action="{% url 'schedule_pickup' exchange.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary btn-lg px-5">
+                                    Confirm & Schedule Pickup
+                                </button>
+                            </form>
+                            <form method="POST" action="{% url 'cancel_exchange' exchange.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-lg px-5 ms-2">
+                                    Cancel Exchange
+                                </button>
+                            </form>
+                        {% elif exchange.status == 'picked_up' %}
+                            <div class="alert alert-info">
+                                Your TV has been picked up and is being verified. You will be notified once the process is complete.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table th {
+        font-weight: 500;
+    }
+    .card-img-top {
+        max-height: 300px;
+        object-fit: contain;
+    }
+</style>
+{% endblock %}

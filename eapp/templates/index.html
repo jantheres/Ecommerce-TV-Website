@@ -1,0 +1,304 @@
+{% extends 'base.html' %} {% block content %} {% load static %} {% load custom_filters %}
+
+<style>
+  :root {
+    --primary-color: #2d3436;
+    --accent-color: #ff6b6b;
+    --text-color: #2d3436;
+    --light-bg: #f5f6fa;
+    --white: #ffffff;
+    --shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Hero Section */
+  .hero-section {
+    position: relative;
+    min-height: 600px;
+    background: linear-gradient(45deg, #f8fafc, #e2e8f0);
+    display: flex;
+    align-items: center;
+    margin-bottom: 60px;
+    overflow: hidden;
+  }
+
+  .hero-content {
+    width: 50%;
+    padding: 60px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-image-container {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+  }
+
+  .hero-image {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    animation: floatEffect 6s ease-in-out infinite;
+  }
+
+  @keyframes floatEffect {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    line-height: 1.2;
+    color: #1e293b;
+  }
+
+  .hero-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    max-width: 500px;
+    color: #475569;
+    line-height: 1.6;
+  }
+
+  .hero-btn {
+    display: inline-block;
+    padding: 15px 40px;
+    background: var(--accent-color);
+    color: var(--white);
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 2px solid var(--accent-color);
+  }
+
+  .hero-btn:hover {
+    background: transparent;
+    color: var(--accent-color);
+  }
+
+  @media (max-width: 992px) {
+    .hero-content {
+      width: 100%;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .hero-image-container {
+      display: none;
+    }
+
+    .hero-subtitle {
+      margin: 0 auto 30px;
+    }
+  }
+
+  /* Featured Categories */
+  .featured-categories {
+    padding: 80px 0;
+    background: var(--white);
+  }
+
+  .section-title {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  .section-title h2 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+  }
+
+  .section-title p {
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* Product Grid */
+  .product-area {
+    padding: 60px 0;
+    background: var(--white);
+  }
+
+  .product-wrapper {
+    background: var(--white);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  }
+
+  .product-wrapper:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .product-img {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 1;
+  }
+
+  .product-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.5s ease;
+  }
+
+  .product-img .secondary-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+  }
+
+  .product-wrapper:hover .secondary-img {
+    opacity: 1;
+  }
+
+  .product-content {
+    padding: 20px;
+  }
+
+  .pro-cat {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 10px;
+  }
+
+  .pro-cat a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .product-title {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+
+  .product-title a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .product-title a:hover {
+    color: var(--accent-color);
+  }
+
+  .product-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .pro-price {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--accent-color);
+  }
+
+  .product-wishlist a {
+    color: #666;
+    transition: all 0.3s ease;
+  }
+
+  .product-wishlist a:hover {
+    color: var(--accent-color);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .hero-section {
+      height: 60vh;
+    }
+
+    .hero-title {
+      font-size: 2rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1rem;
+    }
+  }
+</style>
+
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="hero-content">
+    <h1 class="hero-title">Experience Next-Gen TV</h1>
+    <p class="hero-subtitle">Immerse yourself in stunning 4K resolution, vibrant colors, and smart features with our premium selection of modern televisions.</p>
+    <a href="{% url 'product_list' %}" class="hero-btn">Explore Our TVs</a>
+  </div>
+  <div class="hero-image-container">
+    <img src="{% static 'img/pintv.jpg' %}" alt="Modern Smart TV" class="hero-image">
+  </div>
+</section>
+
+<!-- Featured Categories -->
+<section class="featured-categories">
+  <div class="container">
+    <div class="section-title">
+      <h2>Featured Products</h2>
+      <p>Discover our selection of premium TV, carefully chosen for quality and performance.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Product Grid -->
+<section class="product-area">
+  <div class="container">
+    <div class="row">
+      {% for product in products %}
+      <div class="col-xl-3 col-lg-4 col-md-6">
+        <div class="product-wrapper">
+          <div class="product-img">
+            <a href="{% url 'product_detail' product.id %}">
+              <img src="{{ product.image_1.url }}" alt="{{ product.name }}" />
+              {% if product.image_2 %}
+                <img class="secondary-img" src="{{ product.image_2.url }}" alt="{{ product.name }}" />
+              {% endif %}
+            </a>
+          </div>
+          <div class="product-content">
+            <div class="pro-cat">
+              <a href="{% url 'product_detail' product.id %}">{{ product.subcategory }}</a>
+            </div>
+            <h3 class="product-title">
+              <a href="{% url 'product_detail' product.id %}">{{ product.name }}</a>
+            </h3>
+            <div class="product-meta">
+              <div class="pro-price">
+                <span>₹{{ product.price }}</span>
+              </div>
+              <div class="product-wishlist">
+                <a href="#"><i class="far fa-heart"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

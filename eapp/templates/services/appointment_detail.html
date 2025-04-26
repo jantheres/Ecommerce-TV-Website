@@ -1,0 +1,291 @@
+{% extends "base2.html" %}
+
+{% block content %}
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+    }
+
+    .detail-container {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 0 20px;
+    }
+
+    .appointment-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+
+    .appointment-header {
+        background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+        color: white;
+        padding: 30px;
+        position: relative;
+    }
+
+    .back-link {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        color: white;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+    }
+
+    .back-link i {
+        margin-right: 5px;
+    }
+
+    .service-name {
+        text-align: center;
+        font-size: 28px;
+        font-weight: 600;
+        margin: 20px 0 10px;
+    }
+
+    .appointment-date {
+        text-align: center;
+        font-size: 16px;
+        opacity: 0.9;
+    }
+
+    .status-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .status-pending {
+        background: #FEF3C7;
+        color: #D97706;
+    }
+
+    .status-confirmed {
+        background: #DEF7EC;
+        color: #057A55;
+    }
+
+    .status-completed {
+        background: #E0E7FF;
+        color: #4338CA;
+    }
+
+    .status-cancelled {
+        background: #FEE2E2;
+        color: #DC2626;
+    }
+
+    .appointment-content {
+        padding: 30px;
+    }
+
+    .detail-section {
+        margin-bottom: 30px;
+    }
+
+    .section-title {
+        color: #2d3748;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+    }
+
+    .section-title i {
+        margin-right: 10px;
+        color: #4776E6;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .detail-item {
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    .detail-label {
+        color: #718096;
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+
+    .detail-value {
+        color: #2d3748;
+        font-weight: 500;
+    }
+
+    .address-details, .special-instructions {
+        background: #f8fafc;
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 10px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .action-btn {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .action-btn i {
+        margin-right: 8px;
+    }
+
+    .cancel-btn {
+        background: #FFF5F5;
+        color: #E53E3E;
+    }
+
+    .cancel-btn:hover {
+        background: #E53E3E;
+        color: white;
+    }
+
+    .print-btn {
+        background: #EBF4FF;
+        color: #4776E6;
+    }
+
+    .print-btn:hover {
+        background: #4776E6;
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .detail-container {
+            margin: 20px auto;
+        }
+
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="detail-container">
+    <div class="appointment-card">
+        <div class="appointment-header">
+            <a href="{% url 'appointment_list' %}" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Appointments
+            </a>
+            
+            <div class="service-name">{{ appointment.service.name }}</div>
+            <div class="appointment-date">
+                <i class="fas fa-calendar"></i>
+                {{ appointment.appointment_date|date:"F d, Y" }} at {{ appointment.appointment_time|time:"g:i A" }}
+            </div>
+            
+            <span class="status-badge status-{{ appointment.status }}">
+                {{ appointment.get_status_display }}
+            </span>
+        </div>
+
+        <div class="appointment-content">
+            <div class="detail-section">
+                <h2 class="section-title">
+                    <i class="fas fa-info-circle"></i>
+                    Service Details
+                </h2>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Service Type</div>
+                        <div class="detail-value">{{ appointment.service.get_service_type_display }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Duration</div>
+                        <div class="detail-value">{{ appointment.service.duration }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Price</div>
+                        <div class="detail-value">₹{{ appointment.service.price }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Booking Date</div>
+                        <div class="detail-value">{{ appointment.created_at|date:"F d, Y" }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h2 class="section-title">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Service Address
+                </h2>
+                <div class="address-details">
+                    <div class="detail-value">
+                        {{ appointment.address.recepient_name }}<br>
+                        {{ appointment.address.recepient_contact }}<br>
+                        {{ appointment.address.address_line1 }}<br>
+                        {% if appointment.address.address_line2 %}
+                            {{ appointment.address.address_line2 }}<br>
+                        {% endif %}
+                        {{ appointment.address.city }}, {{ appointment.address.state }}<br>
+                        {{ appointment.address.postal_code }}
+                    </div>
+                </div>
+            </div>
+
+            {% if appointment.special_instructions %}
+            <div class="detail-section">
+                <h2 class="section-title">
+                    <i class="fas fa-clipboard-list"></i>
+                    Special Instructions
+                </h2>
+                <div class="special-instructions">
+                    <div class="detail-value">{{ appointment.special_instructions }}</div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="action-buttons">
+                {% if appointment.status == 'pending' %}
+                <a href="{% url 'cancel_appointment' appointment.id %}" class="action-btn cancel-btn"
+                   onclick="return confirm('Are you sure you want to cancel this appointment?')">
+                    <i class="fas fa-times"></i>
+                    Cancel Appointment
+                </a>
+                {% endif %}
+                <button onclick="window.print()" class="action-btn print-btn">
+                    <i class="fas fa-print"></i>
+                    Print Details
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

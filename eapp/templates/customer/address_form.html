@@ -1,0 +1,304 @@
+{% extends "base2.html" %}
+
+{% block content %}
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+    }
+
+    .form-container {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 40px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+    }
+
+    .page-title {
+        color: #2d3748;
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+    }
+
+    .page-title i {
+        margin-right: 12px;
+        color: #4776E6;
+        font-size: 24px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        display: block;
+        color: #4a5568;
+        font-size: 15px;
+        font-weight: 500;
+        margin-bottom: 8px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        color: #2d3748;
+        background: #f8fafc;
+    }
+
+    .form-control:focus {
+        border-color: #4776E6;
+        box-shadow: 0 0 0 3px rgba(71, 118, 230, 0.1);
+        outline: none;
+    }
+
+    .form-control::placeholder {
+        color: #a0aec0;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 35px;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 30px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+    }
+
+    .btn i {
+        margin-right: 8px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 14px rgba(71, 118, 230, 0.2);
+    }
+
+    .btn-secondary {
+        background: #f8fafc;
+        color: #4a5568;
+        border: 2px solid #e2e8f0;
+    }
+
+    .btn-secondary:hover {
+        background: #e2e8f0;
+        transform: translateY(-2px);
+    }
+
+    /* Style Django form errors */
+    .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 5px 0;
+        color: #e53e3e;
+        font-size: 14px;
+    }
+
+    /* Add icons to form fields */
+    .input-group {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #a0aec0;
+    }
+
+    .input-with-icon {
+        padding-left: 45px;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .form-container {
+            margin: 20px;
+            padding: 30px;
+        }
+
+        .btn-group {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+
+    /* Help text styling */
+    .help-text {
+        font-size: 13px;
+        color: #718096;
+        margin-top: 5px;
+    }
+</style>
+
+<div class="form-container">
+    <h1 class="page-title">
+        <i class="fas fa-map-marker-alt"></i>
+        {% if form.instance.id %}Edit{% else %}Add New{% endif %} Address
+    </h1>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label class="form-label" for="id_recepient_name">Recipient Name</label>
+            <div class="input-group">
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" name="recepient_name" id="id_recepient_name" 
+                       class="form-control input-with-icon" 
+                       value="{{ form.recepient_name.value|default:'' }}"
+                       placeholder="Enter recipient name">
+            </div>
+            {% if form.recepient_name.errors %}
+                <ul class="errorlist">
+                    {% for error in form.recepient_name.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="id_recepient_contact">Contact Number</label>
+            <div class="input-group">
+                <i class="fas fa-phone input-icon"></i>
+                <input type="tel" name="recepient_contact" id="id_recepient_contact"
+                       class="form-control input-with-icon"
+                       value="{{ form.recepient_contact.value|default:'' }}"
+                       placeholder="Enter contact number">
+            </div>
+            {% if form.recepient_contact.errors %}
+                <ul class="errorlist">
+                    {% for error in form.recepient_contact.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="id_address_line1">Address Line 1</label>
+            <div class="input-group">
+                <i class="fas fa-home input-icon"></i>
+                <input type="text" name="address_line1" id="id_address_line1"
+                       class="form-control input-with-icon"
+                       value="{{ form.address_line1.value|default:'' }}"
+                       placeholder="Enter street address">
+            </div>
+            {% if form.address_line1.errors %}
+                <ul class="errorlist">
+                    {% for error in form.address_line1.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="id_city">City</label>
+            <div class="input-group">
+                <i class="fas fa-city input-icon"></i>
+                <input type="text" name="city" id="id_city"
+                       class="form-control input-with-icon"
+                       value="{{ form.city.value|default:'' }}"
+                       placeholder="Enter city">
+            </div>
+            {% if form.city.errors %}
+                <ul class="errorlist">
+                    {% for error in form.city.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="id_state">State</label>
+            <div class="input-group">
+                <i class="fas fa-map input-icon"></i>
+                <input type="text" name="state" id="id_state"
+                       class="form-control input-with-icon"
+                       value="{{ form.state.value|default:'' }}"
+                       placeholder="Enter state">
+            </div>
+            {% if form.state.errors %}
+                <ul class="errorlist">
+                    {% for error in form.state.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="id_postal_code">Postal Code</label>
+            <div class="input-group">
+                <i class="fas fa-mail-bulk input-icon"></i>
+                <input type="text" name="postal_code" id="id_postal_code"
+                       class="form-control input-with-icon"
+                       value="{{ form.postal_code.value|default:'' }}"
+                       placeholder="Enter postal code">
+            </div>
+            {% if form.postal_code.errors %}
+                <ul class="errorlist">
+                    {% for error in form.postal_code.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="btn-group">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i>
+                Save Address
+            </button>
+            <a href="{% url 'address_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Back to Addresses
+            </a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

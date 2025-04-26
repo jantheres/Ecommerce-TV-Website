@@ -1,0 +1,228 @@
+{% extends "base2.html" %}
+
+{% block content %}
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+    }
+
+    .payment-container {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 40px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+
+    .page-title {
+        color: #2d3748;
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .service-details {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .detail-row:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .detail-label {
+        color: #718096;
+        font-size: 15px;
+    }
+
+    .detail-value {
+        color: #2d3748;
+        font-weight: 500;
+        text-align: right;
+    }
+
+    .total-amount {
+        font-size: 24px;
+        font-weight: 600;
+        color: #4776E6;
+    }
+
+    .payment-methods {
+        margin-bottom: 30px;
+    }
+
+    .payment-method {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .payment-method:hover {
+        border-color: #4776E6;
+        background: #f8fafc;
+    }
+
+    .payment-method.selected {
+        border-color: #4776E6;
+        background: #EBF4FF;
+    }
+
+    .payment-method input[type="radio"] {
+        margin-right: 15px;
+    }
+
+    .payment-method-label {
+        flex: 1;
+        font-weight: 500;
+        color: #2d3748;
+    }
+
+    .payment-method-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        color: #4776E6;
+    }
+
+    .btn-pay {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-pay:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 14px rgba(71, 118, 230, 0.2);
+    }
+
+    .btn-pay:disabled {
+        background: #e2e8f0;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .back-link {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        color: #718096;
+        text-decoration: none;
+    }
+
+    .back-link:hover {
+        color: #4776E6;
+    }
+
+    @media (max-width: 768px) {
+        .payment-container {
+            margin: 20px;
+            padding: 30px;
+        }
+    }
+</style>
+
+<div class="payment-container">
+    <h1 class="page-title">Service Payment</h1>
+
+    <div class="service-details">
+        <div class="detail-row">
+            <span class="detail-label">Service</span>
+            <span class="detail-value">{{ appointment.service.name }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Date & Time</span>
+            <span class="detail-value">
+                {{ appointment.appointment_date|date:"F d, Y" }} at {{ appointment.appointment_time|time:"g:i A" }}
+            </span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Service Type</span>
+            <span class="detail-value">{{ appointment.service.get_service_type_display }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Duration</span>
+            <span class="detail-value">{{ appointment.service.duration }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Amount</span>
+            <span class="detail-value total-amount">₹{{ appointment.payment_amount }}</span>
+        </div>
+    </div>
+
+    <form method="post" id="payment-form">
+        {% csrf_token %}
+        <div class="payment-methods">
+            <label class="payment-method">
+                <input type="radio" name="payment_method" value="online" required>
+                <div class="payment-method-icon">
+                    <i class="fas fa-credit-card fa-lg"></i>
+                </div>
+                <span class="payment-method-label">Online Payment</span>
+            </label>
+            <label class="payment-method">
+                <input type="radio" name="payment_method" value="cash" required>
+                <div class="payment-method-icon">
+                    <i class="fas fa-money-bill-wave fa-lg"></i>
+                </div>
+                <span class="payment-method-label">Cash on Service</span>
+            </label>
+        </div>
+
+        <button type="submit" class="btn-pay" id="pay-button">
+            Proceed to Payment
+        </button>
+    </form>
+
+    <a href="{% url 'appointment_detail' appointment.id %}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Appointment Details
+    </a>
+</div>
+
+<script>
+document.querySelectorAll('.payment-method').forEach(method => {
+    method.addEventListener('click', function() {
+        document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+        this.classList.add('selected');
+    });
+});
+
+document.getElementById('payment-form').addEventListener('submit', function(e) {
+    const payButton = document.getElementById('pay-button');
+    payButton.disabled = true;
+    payButton.textContent = 'Processing...';
+});
+</script>
+{% endblock %}

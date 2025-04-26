@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Exchange Request Details</h4>
+                    <span class="badge bg-light text-primary">{{ exchange.status|title }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Customer Information</h5>
+                            <table class="table">
+                                <tr>
+                                    <th>Name:</th>
+                                    <td>{{ exchange.customer.customer_name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Email:</th>
+                                    <td>{{ exchange.customer.email }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Phone:</th>
+                                    <td>{{ exchange.customer.contact_number }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Old TV Details</h5>
+                            <table class="table">
+                                <tr>
+                                    <th>Brand:</th>
+                                    <td>{{ exchange.brand }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Model:</th>
+                                    <td>{{ exchange.model }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Screen Size:</th>
+                                    <td>{{ exchange.screen_size }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Age:</th>
+                                    <td>{{ exchange.age_in_years }} years</td>
+                                </tr>
+                                <tr>
+                                    <th>Condition:</th>
+                                    <td>{{ exchange.condition|title }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5>TV Images</h5>
+                            <div class="row">
+                                {% if exchange.images %}
+                                <div class="col-md-4">
+                                    <img src="{{ exchange.images.url }}" class="img-fluid rounded" alt="TV Image">
+                                </div>
+                                {% else %}
+                                <div class="col-12">
+                                    <p class="text-muted">No images uploaded</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if exchange.status == 'pending' %}
+                    <form method="POST" class="mb-4">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Update Status</label>
+                            <select class="form-select" id="status" name="status" required>
+                                <option value="">Select status</option>
+                                <option value="approved">Approve</option>
+                                <option value="rejected">Reject</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="admin_notes" class="form-label">Admin Notes</label>
+                            <textarea class="form-control" id="admin_notes" name="admin_notes" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Status</button>
+                    </form>
+                    {% endif %}
+
+                    {% if pickup %}
+                    <div class="mt-4">
+                        <h5>Pickup Details</h5>
+                        <table class="table">
+                            <tr>
+                                <th>Status:</th>
+                                <td><span class="badge bg-info">{{ pickup.status|title }}</span></td>
+                            </tr>
+                            <tr>
+                                <th>Date:</th>
+                                <td>{{ pickup.pickup_date }}</td>
+                            </tr>
+                            <tr>
+                                <th>Time:</th>
+                                <td>{{ pickup.pickup_time }}</td>
+                            </tr>
+                            <tr>
+                                <th>Address:</th>
+                                <td>{{ pickup.address }}</td>
+                            </tr>
+                            {% if pickup.technician %}
+                            <tr>
+                                <th>Technician:</th>
+                                <td>{{ pickup.technician.name }}</td>
+                            </tr>
+                            {% endif %}
+                        </table>
+
+                        {% if not pickup.technician %}
+                        <div class="text-center">
+                            <a href="{% url 'assign_pickup_technician' exchange.id %}" 
+                               class="btn btn-primary">Assign Technician</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">New TV Details</h5>
+                </div>
+                <div class="card-body">
+                    <img src="{{ exchange.product.image_1.url }}" class="img-fluid rounded mb-3" alt="{{ exchange.product.name }}">
+                    <h6>{{ exchange.product.name }}</h6>
+                    <p class="text-primary">Original Price: ₹{{ exchange.product.price }}</p>
+                    {% if exchange.exchange_value %}
+                    <p class="text-success">Exchange Value: ₹{{ exchange.exchange_value }}</p>
+                    <p class="text-success">Final Price: ₹{{ exchange.product.price|sub:exchange.exchange_value }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

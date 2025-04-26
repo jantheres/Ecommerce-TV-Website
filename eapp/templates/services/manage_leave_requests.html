@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-calendar-check"></i> Manage Leave Requests
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    {% if leave_requests %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Technician</th>
+                                        <th>Leave Period</th>
+                                        <th>Reason</th>
+                                        <th>Status</th>
+                                        <th>Requested On</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for leave in leave_requests %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                                        {{ leave.technician.name|make_list|first|upper }}
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-0">{{ leave.technician.name }}</h6>
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-phone-alt"></i> {{ leave.technician.phone_number }}
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <i class="fas fa-calendar-alt text-muted"></i>
+                                                    {{ leave.start_date|date:"M d, Y" }} - {{ leave.end_date|date:"M d, Y" }}
+                                                </div>
+                                                <small class="text-muted">
+                                                    {{ leave.start_date|timesince:leave.end_date }} duration
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <div class="text-wrap" style="max-width: 250px;">
+                                                    {{ leave.reason }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{% if leave.status == 'approved' %}success{% elif leave.status == 'rejected' %}danger{% else %}warning{% endif %}">
+                                                    {{ leave.status|title }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {{ leave.created_at|date:"M d, Y" }}
+                                                <br>
+                                                <small class="text-muted">{{ leave.created_at|time:"g:i A" }}</small>
+                                            </td>
+                                            <td>
+                                                {% if leave.status == 'pending' %}
+                                                    <button type="button" class="btn btn-sm btn-success mb-1" data-bs-toggle="modal" data-bs-target="#actionModal{{ leave.id }}" onclick="setAction('approve', {{ leave.id }})">
+                                                        <i class="fas fa-check"></i> Approve
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#actionModal{{ leave.id }}" onclick="setAction('reject', {{ leave.id }})">
+                                                        <i class="fas fa-times"></i> Reject
+                                                    </button>
+
+                                                    <!-- Modal for Approve/Reject -->
+                                                    <div class="modal fade" id="actionModal{{ leave.id }}" tabindex="-1">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <form method="post">
+                                                                    {% csrf_token %}
+                                                                    <input type="hidden" name="leave_request_id" value="{{ leave.id }}">
+                                                                    <input type="hidden" name="action" id="action{{ leave.id }}">
+                                                                    
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title">
+                                                                            <span id="actionTitle{{ leave.id }}">Confirm Action</span>
+                                                                        </h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    
+                                                                    <div class="modal-body">
+                                                                        <div class="mb-3">
+                                                                            <label for="remarks{{ leave.id }}" class="form-label">Remarks (Optional)</label>
+                                                                            <textarea class="form-control" id="remarks{{ leave.id }}" name="remarks" rows="3" 
+                                                                                placeholder="Add any comments or reasons for the technician..."></textarea>
+                                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                        <button type="submit" class="btn" id="submitBtn{{ leave.id }}">Confirm</button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {% else %}
+                                                    {% if leave.admin_remarks %}
+                                                        <button type="button" class="btn btn-sm btn-info" data-bs-toggle="popover" 
+                                                                data-bs-content="{{ leave.admin_remarks }}" data-bs-placement="left">
+                                                            <i class="fas fa-comment-alt"></i> View Remarks
+                                                        </button>
+                                                    {% else %}
+                                                        <span class="text-muted">No remarks</span>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                            <h5>No Leave Requests</h5>
+                            <p class="text-muted">There are no leave requests to manage at this time.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-sm {
+        font-weight: 500;
+        font-size: 1.2rem;
+    }
+</style>
+
+<script>
+function setAction(action, id) {
+    document.getElementById('action' + id).value = action;
+    const actionTitle = document.getElementById('actionTitle' + id);
+    const submitBtn = document.getElementById('submitBtn' + id);
+    
+    if (action === 'approve') {
+        actionTitle.innerHTML = '<i class="fas fa-check-circle text-success"></i> Approve Leave Request';
+        submitBtn.className = 'btn btn-success';
+        submitBtn.innerHTML = '<i class="fas fa-check"></i> Approve';
+    } else {
+        actionTitle.innerHTML = '<i class="fas fa-times-circle text-danger"></i> Reject Leave Request';
+        submitBtn.className = 'btn btn-danger';
+        submitBtn.innerHTML = '<i class="fas fa-times"></i> Reject';
+    }
+}
+
+// Initialize popovers
+document.addEventListener('DOMContentLoaded', function() {
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+        return new bootstrap.Popover(popoverTriggerEl);
+    });
+});
+</script>
+{% endblock %}

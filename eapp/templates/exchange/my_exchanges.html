@@ -1,0 +1,87 @@
+{% extends 'base2.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">My TV Exchanges</h4>
+                </div>
+                <div class="card-body">
+                    {% if exchanges %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Exchange ID</th>
+                                    <th>TV Details</th>
+                                    <th>Exchange Value</th>
+                                    <th>Status</th>
+                                    <th>Created Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for exchange in exchanges %}
+                                <tr>
+                                    <td>#{{ exchange.id }}</td>
+                                    <td>
+                                        <strong>{{ exchange.brand }} {{ exchange.model }}</strong><br>
+                                        <small class="text-muted">{{ exchange.screen_size }} inches</small>
+                                    </td>
+                                    <td class="text-success">₹{{ exchange.exchange_value }}</td>
+                                    <td>
+                                        {% if exchange.status == 'pending_review' %}
+                                        <span class="badge bg-warning text-dark">Pending Review</span>
+                                        {% elif exchange.status == 'approved' %}
+                                        <span class="badge bg-success">Approved</span>
+                                        {% elif exchange.status == 'rejected' %}
+                                        <span class="badge bg-danger">Rejected</span>
+                                        {% elif exchange.status == 'pending_pickup' %}
+                                        <span class="badge bg-info">Pending Pickup</span>
+                                        {% elif exchange.status == 'picked_up' %}
+                                        <span class="badge bg-primary">Picked Up</span>
+                                        {% elif exchange.status == 'quality_check' %}
+                                        <span class="badge bg-warning">Quality Check</span>
+                                        {% elif exchange.status == 'completed' %}
+                                        <span class="badge bg-success">Completed</span>
+                                        {% elif exchange.status == 'cancelled' %}
+                                        <span class="badge bg-danger">Cancelled</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ exchange.created_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'exchange_detail' exchange.id %}" class="btn btn-sm btn-outline-primary">View Details</a>
+                                            {% if exchange.status == 'approved' and not exchange.exchangepickup %}
+                                            <a href="{% url 'schedule_pickup' exchange.id %}" class="btn btn-sm btn-success">Schedule Pickup</a>
+                                            {% endif %}
+                                            {% if exchange.status == 'pending_review' %}
+                                            <form method="POST" action="{% url 'cancel_exchange' exchange.id %}" class="d-inline">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to cancel this exchange?')">Cancel</button>
+                                            </form>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <img src="{% static 'images/no-exchanges.svg' %}" alt="No Exchanges" style="width: 200px; margin-bottom: 20px;">
+                        <h5 class="text-muted">No Exchange Requests Found</h5>
+                        <p class="text-muted mb-4">You haven't initiated any TV exchanges yet.</p>
+                        <a href="{% url 'product_list' %}" class="btn btn-primary">Browse TVs for Exchange</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,624 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="no-js" lang="">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>PrimePixels</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="manifest" href="{% url 'index' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="{% static 'img/tvlogo.png' %}"
+    />
+
+    <!-- CSS here -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/animate.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/fontawesome-all.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/flaticon.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/meanmenu.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/slick.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/default.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}" />
+  </head>
+  <style>
+    :root {
+      --primary-color: #4776E6;
+      --secondary-color: #8E54E9;
+      --text-color: #2d3748;
+      --light-text: #718096;
+      --bg-color: #ffffff;
+      --hover-bg: #f7fafc;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .navbar {
+      background: var(--bg-color);
+      box-shadow: var(--shadow);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .navbar-brand {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-color) !important;
+      background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      transition: opacity 0.3s ease;
+    }
+
+    .navbar-brand:hover {
+      opacity: 0.9;
+    }
+
+    .nav-link {
+      color: var(--text-color) !important;
+      font-weight: 500;
+      padding: 0.5rem 1rem !important;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      position: relative;
+      margin: 0 0.2rem;
+    }
+
+    .nav-link:hover {
+      color: var(--primary-color) !important;
+      background: var(--hover-bg);
+    }
+
+    .nav-link.active {
+      color: var(--primary-color) !important;
+      background: var(--hover-bg);
+    }
+
+    .nav-link i {
+      margin-right: 6px;
+    }
+
+    .dropdown-menu {
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      border: none;
+      padding: 0.5rem;
+      min-width: 200px;
+      margin-top: 0.5rem;
+      animation: dropdownFade 0.3s ease;
+    }
+
+    @keyframes dropdownFade {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .dropdown-item {
+      padding: 0.7rem 1.2rem;
+      color: var(--text-color);
+      border-radius: 8px;
+      margin: 0.2rem 0;
+      transition: all 0.2s ease;
+    }
+
+    .dropdown-item i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+      color: var(--light-text);
+      transition: all 0.2s ease;
+    }
+
+    .dropdown-item:hover {
+      background: var(--hover-bg);
+      color: var(--primary-color);
+    }
+
+    .dropdown-item:hover i {
+      color: var(--primary-color);
+    }
+
+    .cart-link {
+      position: relative;
+      padding: 0.5rem 1rem;
+      color: var(--text-color);
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .cart-link:hover {
+      background: var(--hover-bg);
+      color: var(--primary-color);
+    }
+
+    .cart-count {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: var(--primary-color);
+      color: white;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 1rem;
+      font-weight: 600;
+    }
+
+    .navbar-toggler {
+      border: none;
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .navbar-toggler:focus {
+      outline: none;
+      box-shadow: none;
+      background: var(--hover-bg);
+    }
+
+    @media (max-width: 991px) {
+      .navbar {
+        padding: 0.8rem 1rem;
+      }
+
+      .navbar-collapse {
+        background: var(--bg-color);
+        padding: 1rem;
+        border-radius: 12px;
+        margin-top: 0.5rem;
+        box-shadow: var(--shadow);
+      }
+
+      .nav-link {
+        padding: 0.8rem 1rem !important;
+      }
+
+      .dropdown-menu {
+        box-shadow: none;
+        border-radius: 8px;
+        padding: 0;
+        margin-top: 0;
+        background: var(--hover-bg);
+      }
+
+      .cart-link {
+        display: inline-block;
+        margin-top: 0.5rem;
+      }
+    }
+  </style>
+
+  <body>
+    <!-- preloader -->
+    <!-- <div id="preloader">
+      <div class="preloader">
+        <span></span>
+        <span></span>
+      </div>
+    </div> -->
+    <!-- preloader end  -->
+
+    <!-- header start -->
+     
+      <!-- header start -->
+      <header>
+        <nav class="navbar navbar-expand-lg">
+          <div class="container">
+            <a class="navbar-brand" href="{% url 'index' %}">PrimePixels</a>
+            
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+              <i class="fas fa-bars"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav ml-auto align-items-center">
+                <li class="nav-item">
+                  <a href="{% url 'index' %}" class="nav-link {% if request.path == '/' %}active{% endif %}">
+                    <i class="fas fa-home"></i> Home
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{% url 'product_list' %}" class="nav-link {% if 'product' in request.path %}active{% endif %}">
+                    <i class="fas fa-tv"></i> Products
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{% url 'service_list' %}" class="nav-link {% if 'service' in request.path %}active{% endif %}">
+                    <i class="fas fa-tools"></i> Services
+                  </a>
+                </li>
+                {% if user.is_authenticated %}
+                  <li class="nav-item">
+                    <a href="{% url 'appointment_list' %}" class="nav-link {% if 'appointments' in request.path %}active{% endif %}">
+                      <i class="far fa-calendar-alt"></i> My Appointments
+                    </a>
+                  </li>
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown">
+                      <i class="far fa-user"></i> My Account
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                      <a class="dropdown-item" href="{% url 'customer_dashboard' %}">
+                        <i class="fas fa-user-circle"></i> Profile
+                      </a>
+                      <a class="dropdown-item" href="{% url 'logout' %}" onclick="return confirmLogout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                      </a>
+                    </div>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{% url 'cart' %}" class="cart-link">
+                      <i class="fas fa-shopping-cart"></i>
+                      <span class="cart-count">{{ cart_count }}</span>
+                    </a>
+                  </li>
+                {% else %}
+                  <li class="nav-item">
+                    <a href="{% url 'login' %}" class="nav-link">
+                      <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{% url 'register' %}" class="nav-link">
+                      <i class="fas fa-user-plus"></i> Register
+                    </a>
+                  </li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </header>
+      &gt
+      <!-- header end -->
+    {% if user.is_staff or user.seller %}
+    <li>
+        <a href="#" onclick="confirmLogout()" style="color: red; text-decoration: none;">Logout</a>
+    </li>
+  {% else %}
+    <header class="transparent-header transparent-header-2">
+      <div class="header-area">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-8">
+              <div class="user-menu">
+                <ul>
+                  {% if user.is_authenticated %}
+                  <li><a href="{% url 'customer_dashboard' %}"><i class="fa fa-user"></i> My Account</a></li>
+                  <li><a href="{% url 'cart' %}"><i class="fa fa-shopping-cart"></i> My Cart</a></li>
+                  <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> Logout</a></li>
+                  {% endif %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- header end -->
+
+    <!-- Bootstrap Modal -->
+    {% if messages %}
+        <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Message</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        {% for message in messages %}
+                            <p>{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %} 
+
+
+    {% block content %} {% endblock %}
+
+    <!-- footer start -->
+    <footer>
+      <div class="footer-area box-90 pt-100 pb-60">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-xl-3 col-lg-5 col-md-6">
+              <div class="footer-widget mb-40">
+                <!-- <div class="footer-logo">
+                  <a href="{% url 'index' %}"
+                    ><img src="{% static 'favicon.png' %}" alt=""
+                  /></a>
+                </div> -->
+                <p>
+                    PrimePixels is a cutting-edge e-commerce platform dedicated to offering a seamless and intuitive shopping experience for television enthusiasts.
+                </p>
+                <div class="footer-time d-flex mt-30">
+                  <!-- <div class="time-icon">
+                    <img src="{% static 'favicon.png' %}" alt="" />
+                  </div> -->
+                  <div class="time-text">
+                    <span>Got Questions ? Call us 24/7!</span>
+                    <h2>(0600) 874 548</h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-2 col-lg-2 col-md-3 d-lg-none d-xl-block">
+              <div class="footer-widget pl-50 mb-40">
+                <h3>Social Media</h3>
+                <ul class="footer-link">
+                  <li><a href="#">Facebook</a></li>
+                  <li><a href="#">Twitter</a></li>
+                  <li><a href="#">Linkedin</a></li>
+                  <li><a href="#">Youtube</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-xl-2 col-lg-2 col-md-3 d-lg-none d-xl-block">
+              <div class="footer-widget pl-30 mb-40">
+                <h3>Location</h3>
+                <ul class="footer-link">
+                  <li><a href="#">New York</a></li>
+                  <li><a href="#">Tokyo</a></li>
+                  <li><a href="#">Dhaka</a></li>
+                  <li><a href="#"> Chittagong</a></li>
+                  <li><a href="#">China</a></li>
+                  <li><a href="#">Japan</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-xl-2 col-lg-2 col-md-3">
+              <div class="footer-widget mb-40">
+                <h3>About</h3>
+                <ul class="footer-link">
+                  <li><a href="#">Terms & Conditions</a></li>
+                  <li><a href="#"> Privacy Policy</a></li>
+                  <li><a href="#">Contact Us</a></li>
+                  <li><a href="#">FAQ</a></li>
+                  <li><a href="#">Wholesale</a></li>
+                  <li><a href="#">Direction</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-xl-3 col-lg-5 col-md-6">
+              <div class="footer-widget mb-40">
+                <div class="footer-banner">
+                  <!-- <a href="shop.html"
+                    ><img src="{% static 'img/banner/add.jpg' %}" alt=""
+                  /></a> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="copyright-area box-105">
+        <div class="container-fluid">
+          <div class="copyright-border pt-30 pb-30">
+            <div class="row">
+              <div class="col-xl-6 col-lg-6 col-md-6">
+                <div class="copyright text-center text-md-left">
+                  <p>
+                    Copyright &copy; 2024 <a href="#">PrimePixels</a>. All Rights
+                    Reserved
+                  </p>
+                </div>
+              </div>
+              <div class="col-xl-6 col-lg-6 col-md-6">
+                <div class="footer-icon text-center text-md-right">
+                  <a href="#"><i class="fab fa-facebook-f"></i></a>
+                  <a href="#"><i class="fab fa-twitter"></i></a>
+                  <a href="#"><i class="fab fa-behance"></i></a>
+                  <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                  <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!-- footer end -->
+    <li>
+      <a href="#" onclick="confirmLogout()" style="color: red; text-decoration: none;">Logout</a>
+  </li>
+{% endif %}
+
+    <!-- Fullscreen search -->
+    <div class="search-wrap">
+      <div class="search-inner">
+        <i class="fas fa-times search-close" id="search-close"></i>
+        <div class="search-cell">
+          <form
+            id="searchForm"
+            action="{% url 'search_results' %}"
+            method="GET"
+          >
+            <div class="search-field-holder">
+              <input
+                type="text"
+                name="q"
+                id="searchInput"
+                class="main-search-input"
+                placeholder="Search Entire Store..."
+              />
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- JS here -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("searchInput");
+        searchInput.addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            document.getElementById("searchForm").submit();
+          }
+        });
+      });
+    </script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+  <!-- Script to show the modal -->
+  <script type="text/javascript">
+       ₹(document).ready(function() {
+          {% if messages %}
+               ₹('#messageModal').modal('show');
+          {% endif %}
+      });
+  </script>
+    <script src="{% static 'js/vendor/jquery-1.12.4.min.js' %}"></script>
+    <script src="{% static 'js/popper.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'js/isotope.pkgd.min.js' %}"></script>
+    <script src="{% static 'js/one-page-nav-min.js' %}"></script>
+    <script src="{% static 'js/slick.min.js' %}"></script>
+    <script src="{% static 'js/jquery.meanmenu.min.js' %}"></script>
+    <script src="{% static 'js/ajax-form.js' %}"></script>
+    <script src="{% static 'js/wow.min.js' %}"></script>
+    <script src="{% static 'js/jquery.scrollUp.min.js' %}"></script>
+    <script src="{% static 'js/jquery.final-countdown.min.js' %}"></script>
+    <script src="{% static 'js/imagesloaded.pkgd.min.js' %}"></script>
+    <script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
+    <script src="{% static 'js/instafeed.min.js' %}"></script>
+    <script src="{% static 'js/plugins.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script>
+      function confirmLogout() {
+        if (confirm("Are you sure you want to logout?")) {
+          window.location.href = "{% url 'logout' %}";
+        }
+      }
+      </script>
+  
+      <script>
+        // CSRF Token Setup for AJAX
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+        
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+      </script>
+  
+      <script>
+        // Live Search Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+          const searchInput = document.getElementById('searchInput');
+          const searchResults = document.getElementById('searchResults');
+          let searchTimeout;
+  
+          searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+            
+            if (query.length < 2) {
+              searchResults.innerHTML = '';
+              return;
+            }
+  
+            // Add loading indicator
+            searchResults.innerHTML = `
+              <div class="search-result-item">
+                <div class="search-result-info">
+                  <div class="search-result-title">Searching...</div>
+                </div>
+              </div>
+            `;
+  
+            searchTimeout = setTimeout(() => {
+              fetch(`/search/?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                  if (data.length === 0) {
+                    searchResults.innerHTML = `
+                      <div class="search-result-item">
+                        <div class="search-result-info">
+                          <div class="search-result-title">No results found</div>
+                        </div>
+                      </div>
+                    `;
+                    return;
+                  }
+  
+                  searchResults.innerHTML = data.slice(0, 5).map(product => `
+                    <a href="/product/${product.id}/" class="search-result-item">
+                      <img src="${product.image}" alt="${product.name}">
+                      <div class="search-result-info">
+                        <div class="search-result-title">${product.name}</div>
+                        <div class="search-result-category">${product.category}</div>
+                      </div>
+                      <div class="search-result-price">₹${product.price}</div>
+                    </a>
+                  `).join('');
+                })
+                .catch(error => {
+                  console.error('Error:', error);
+                  searchResults.innerHTML = `
+                    <div class="search-result-item">
+                      <div class="search-result-info">
+                        <div class="search-result-title">Error loading results</div>
+                      </div>
+                    </div>
+                  `;
+                });
+            }, 300);
+          });
+  
+          // Close search results when clicking outside
+          document.addEventListener('click', function(e) {
+            if (!searchResults.contains(e.target) && e.target !== searchInput) {
+              searchResults.innerHTML = '';
+            }
+          });
+        });
+      </script>
+  </body>
+</html>

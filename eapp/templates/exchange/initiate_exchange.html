@@ -1,0 +1,71 @@
+{% extends 'base2.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">TV Exchange Program</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Selected TV for Purchase</h5>
+                            <div class="card">
+                                <img src="{{ product.image_1.url }}" class="card-img-top" alt="{{ product.name }}">
+                                <div class="card-body">
+                                    <h6>{{ product.name }}</h6>
+                                    <p class="text-primary">₹{{ product.price }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Exchange Your Old TV</h5>
+                            <form method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="brand" class="form-label">Brand</label>
+                                    <input type="text" class="form-control" id="brand" name="brand" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="model" class="form-label">Model</label>
+                                    <input type="text" class="form-control" id="model" name="model" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="screen_size" class="form-label">Screen Size (inches)</label>
+                                    <input type="text" class="form-control" id="screen_size" name="screen_size" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="age_in_years" class="form-label">Age (in years)</label>
+                                    <input type="number" class="form-control" id="age_in_years" name="age_in_years" required min="0">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="condition" class="form-label">Condition</label>
+                                    <select class="form-select" id="condition" name="condition" required>
+                                        <option value="">Select condition</option>
+                                        <option value="excellent">Excellent</option>
+                                        <option value="good">Good</option>
+                                        <option value="fair">Fair</option>
+                                        <option value="poor">Poor</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="original_price" class="form-label">Original Purchase Price</label>
+                                    <input type="number" class="form-control" id="original_price" name="original_price" required min="0">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="tv_image" class="form-label">Upload TV Image</label>
+                                    <input type="file" class="form-control" id="tv_image" name="tv_image" accept="image/*" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit Exchange Request</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

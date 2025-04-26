@@ -1,0 +1,274 @@
+{% extends "base2.html" %}
+{% load custom_filters %}
+
+{% block content %}
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+    }
+
+    .booking-container {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 40px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .booking-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+    }
+
+    .page-title {
+        color: #2d3748;
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+    }
+
+    .page-title i {
+        margin-right: 12px;
+        color: #4776E6;
+        font-size: 24px;
+    }
+
+    .service-details {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+
+    .service-name {
+        font-size: 20px;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 10px;
+    }
+
+    .service-info {
+        display: flex;
+        justify-content: space-between;
+        color: #718096;
+        font-size: 14px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        display: block;
+        color: #4a5568;
+        font-size: 15px;
+        font-weight: 500;
+        margin-bottom: 8px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        color: #2d3748;
+        background: #f8fafc;
+    }
+
+    .form-control:focus {
+        border-color: #4776E6;
+        box-shadow: 0 0 0 3px rgba(71, 118, 230, 0.1);
+        outline: none;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 35px;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 30px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+        text-decoration: none;
+    }
+
+    .btn i {
+        margin-right: 8px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 14px rgba(71, 118, 230, 0.2);
+    }
+
+    .btn-secondary {
+        background: #f8fafc;
+        color: #4a5568;
+        border: 2px solid #e2e8f0;
+    }
+
+    .btn-secondary:hover {
+        background: #e2e8f0;
+        transform: translateY(-2px);
+    }
+
+    .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 5px 0;
+        color: #e53e3e;
+        font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+        .booking-container {
+            margin: 20px;
+            padding: 30px;
+        }
+
+        .btn-group {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="booking-container">
+    <h1 class="page-title">
+        <i class="fas fa-calendar-alt"></i>
+        Book Service Appointment
+    </h1>
+
+    <div class="service-details">
+        <div class="service-name">{{ service.name }}</div>
+        <div class="service-info">
+            <span><i class="fas fa-tag"></i> ₹{{ service.price }}</span>
+            <span><i class="fas fa-clock"></i> {{ service.duration }}</span>
+            <span><i class="fas fa-tools"></i> {{ service.get_service_type_display }}</span>
+        </div>
+    </div>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {% for message in messages %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endfor %}
+        <div class="form-group">
+            <label class="form-label" for="{{ form.appointment_date.id_for_label }}">Appointment Date</label>
+            {{ form.appointment_date }}
+            {% if form.appointment_date.errors %}
+                <ul class="errorlist">
+                    {% for error in form.appointment_date.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="{{ form.appointment_time.id_for_label }}">Appointment Time</label>
+            <select name="{{ form.appointment_time.name }}" id="{{ form.appointment_time.id_for_label }}" class="form-control">
+                <option value="">Select a time</option>
+                {% for hour in "9,10,11,12,13,14,15,16,17"|split:"," %}
+                    {% for minute in "00,30"|split:"," %}
+                        {% if not forloop.parentloop.last or forloop.counter0 == 0 %}
+                            <option value="{{ hour }}:{{ minute }}">
+                                {% if hour|add:"0" < 12 %}
+                                    {{ hour }}:{{ minute }} AM
+                                {% elif hour|add:"0" == 12 %}
+                                    {{ hour }}:{{ minute }} PM
+                                {% else %}
+                                    {{ hour|add:"-12" }}:{{ minute }} PM
+                                {% endif %}
+                            </option>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </select>
+            {% if form.appointment_time.errors %}
+                <ul class="errorlist">
+                    {% for error in form.appointment_time.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="{{ form.address.id_for_label }}">Service Address</label>
+            {{ form.address }}
+            {% if form.address.errors %}
+                <ul class="errorlist">
+                    {% for error in form.address.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <div style="margin-top: 10px;">
+                <a href="{% url 'address_create' %}" style="color: #4776E6; text-decoration: none;">
+                    <i class="fas fa-plus-circle"></i> Add New Address
+                </a>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="{{ form.special_instructions.id_for_label }}">Special Instructions</label>
+            {{ form.special_instructions }}
+            {% if form.special_instructions.errors %}
+                <ul class="errorlist">
+                    {% for error in form.special_instructions.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="btn-group">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-calendar-check"></i>
+                Book Appointment
+            </button>
+            <a href="{% url 'service_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Back to Services
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Assign Technician to Service Appointment</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Appointment Details -->
+                    <div class="mb-4">
+                        <h5>Appointment Details</h5>
+                        <table class="table">
+                            <tr>
+                                <th>Service:</th>
+                                <td>{{ appointment.service.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Customer:</th>
+                                <td>{{ appointment.customer.customer_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Date & Time:</th>
+                                <td>{{ appointment.appointment_date|date:"M d, Y" }} at {{ appointment.appointment_time|time:"h:i A" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Address:</th>
+                                <td>
+                                    {{ appointment.address.address_line1 }}<br>
+                                    {% if appointment.address.address_line2 %}
+                                        {{ appointment.address.address_line2 }}<br>
+                                    {% endif %}
+                                    {{ appointment.address.city }}, {{ appointment.address.state }} {{ appointment.address.postal_code }}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Assign Technician Form -->
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="technician" class="form-label">Select Technician</label>
+                            <select name="technician" id="technician" class="form-select" required>
+                                <option value="">Choose a technician...</option>
+                                {% for tech in technicians %}
+                                <option value="{{ tech.id }}">
+                                    {{ tech.name }} - {{ tech.get_expertise_display }}
+                                    {% if tech.rating %}(Rating: {{ tech.rating }}){% endif %}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text">
+                                Only showing available technicians (not on leave)
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Assign Technician</button>
+                            <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

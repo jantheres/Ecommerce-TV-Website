@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Add New Technician</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Personal Information -->
+                        <h5 class="mb-3">Personal Information</h5>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="phone_number" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone_number" name="phone_number" required 
+                                   pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="expertise" class="form-label">Expertise</label>
+                            <select class="form-select" id="expertise" name="expertise" required>
+                                <option value="">Select expertise...</option>
+                                <option value="installation">TV Installation</option>
+                                <option value="repair">TV Repair</option>
+                                <option value="maintenance">TV Service/Maintenance</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Account Information -->
+                        <h5 class="mb-3 mt-4">Account Information</h5>
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                            <div class="form-text">
+                                Password must be at least 8 characters long and contain letters and numbers.
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Add Technician</button>
+                            <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,252 @@
+{% extends "base2.html" %}
+
+{% block content %}
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+    }
+
+    .profile-container {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 0 20px;
+    }
+
+    .profile-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        padding: 40px;
+        position: relative;
+    }
+
+    .profile-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+    }
+
+    .profile-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #4776E6, #8E54E9);
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .profile-avatar i {
+        font-size: 40px;
+        color: white;
+    }
+
+    .profile-title {
+        color: #2d3748;
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .profile-subtitle {
+        color: #718096;
+        font-size: 16px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+        position: relative;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #4a5568;
+        font-weight: 500;
+        font-size: 14px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 20px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        color: #2d3748;
+        background: #fff;
+    }
+
+    .form-control:focus {
+        border-color: #4776E6;
+        box-shadow: 0 0 0 3px rgba(71, 118, 230, 0.1);
+        outline: none;
+    }
+
+    .form-control:disabled {
+        background-color: #f7fafc;
+        cursor: not-allowed;
+    }
+
+    .input-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #a0aec0;
+    }
+
+    .form-text {
+        margin-top: 6px;
+        font-size: 14px;
+        color: #718096;
+    }
+
+    .form-text a {
+        color: #4776E6;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .form-text a:hover {
+        color: #8E54E9;
+        text-decoration: underline;
+    }
+
+    .btn-save {
+        display: inline-block;
+        width: 100%;
+        padding: 14px 28px;
+        background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 14px rgba(71, 118, 230, 0.2);
+    }
+
+    .btn-save:active {
+        transform: translateY(0);
+    }
+
+    .btn-save i {
+        margin-right: 8px;
+    }
+
+    .success-alert {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 16px 24px;
+        background: #48bb78;
+        color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        display: none;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    .success-alert.show {
+        display: block;
+    }
+</style>
+
+<div class="profile-container">
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <h2 class="profile-title">My Profile</h2>
+            <p class="profile-subtitle">Update your personal information</p>
+        </div>
+
+        <form method="post" class="profile-form" onsubmit="showSuccessMessage(event)">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label" for="full-name">Full Name</label>
+                <input type="text" class="form-control" id="full-name" name="full-name" value="{{ customer.customer_name }}" required>
+                <i class="fas fa-user input-icon"></i>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="your-email">Email Address</label>
+                <input type="email" class="form-control" id="your-email" name="your-email" value="{{ customer.email }}" required>
+                <i class="fas fa-envelope input-icon"></i>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="phone-number">Phone Number</label>
+                <input type="tel" class="form-control" id="phone-number" name="phone-number" value="{{ customer.contact_number }}" required>
+                <i class="fas fa-phone input-icon"></i>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="********" disabled>
+                <i class="fas fa-lock input-icon"></i>
+                <small class="form-text">
+                    To change your password, <a href="{% url 'change_password' %}">click here</a>
+                </small>
+            </div>
+
+            <button type="submit" class="btn-save">
+                <i class="fas fa-save"></i> Save Changes
+            </button>
+        </form>
+    </div>
+</div>
+
+<div id="successAlert" class="success-alert">
+    <i class="fas fa-check-circle"></i> Profile updated successfully!
+</div>
+
+<script>
+    function showSuccessMessage(event) {
+        event.preventDefault();
+        
+        // Show success message
+        const alert = document.getElementById('successAlert');
+        alert.classList.add('show');
+        
+        // Hide alert after 3 seconds
+        setTimeout(() => {
+            alert.classList.remove('show');
+            // Submit the form
+            event.target.submit();
+        }, 2000);
+    }
+</script>
+{% endblock %}

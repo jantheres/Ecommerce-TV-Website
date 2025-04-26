@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">TV Exchange Requests</h4>
+                    <div>
+                        <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#filterSection">
+                            <i class="fas fa-filter"></i> Filters
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filter Section -->
+                <div class="collapse" id="filterSection">
+                    <div class="card-body border-bottom">
+                        <form method="GET" class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Status</label>
+                                <select name="status" class="form-select">
+                                    <option value="">All</option>
+                                    <option value="pending_review" {% if request.GET.status == 'pending_review' %}selected{% endif %}>Pending Review</option>
+                                    <option value="approved" {% if request.GET.status == 'approved' %}selected{% endif %}>Approved</option>
+                                    <option value="rejected" {% if request.GET.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                                    <option value="quality_check" {% if request.GET.status == 'quality_check' %}selected{% endif %}>Quality Check</option>
+                                    <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>Completed</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Pickup Status</label>
+                                <select name="pickup_status" class="form-select">
+                                    <option value="">All</option>
+                                    <option value="not_scheduled" {% if request.GET.pickup_status == 'not_scheduled' %}selected{% endif %}>Not Scheduled</option>
+                                    <option value="scheduled" {% if request.GET.pickup_status == 'scheduled' %}selected{% endif %}>Scheduled</option>
+                                    <option value="picked_up" {% if request.GET.pickup_status == 'picked_up' %}selected{% endif %}>Picked Up</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Date Range</label>
+                                <input type="date" name="date_from" class="form-control" value="{{ request.GET.date_from }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">&nbsp;</label>
+                                <input type="date" name="date_to" class="form-control" value="{{ request.GET.date_to }}">
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                                <a href="{% url 'admin_exchange_list' %}" class="btn btn-outline-secondary">Clear Filters</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    {% if exchanges %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Customer</th>
+                                    <th>Old TV Details</th>
+                                    <th>New TV</th>
+                                    <th>Exchange Value</th>
+                                    <th>Status</th>
+                                    <th>Pickup Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for exchange in exchanges %}
+                                <tr>
+                                    <td>{{ exchange.created_at|date:"d M Y" }}</td>
+                                    <td>
+                                        <strong>{{ exchange.customer.customer_name }}</strong><br>
+                                        <small class="text-muted">{{ exchange.customer.email }}</small>
+                                    </td>
+                                    <td>
+                                        <strong>{{ exchange.brand }} {{ exchange.model }}</strong><br>
+                                        <small class="text-muted">
+                                            {{ exchange.screen_size }}" | {{ exchange.condition|title }} | {{ exchange.age_in_years }} years old
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <strong>{{ exchange.product.name }}</strong><br>
+                                        <small class="text-muted">₹{{ exchange.product.price }}</small>
+                                    </td>
+                                    <td>
+                                        {% if exchange.exchange_value %}
+                                        <span class="text-success fw-bold">₹{{ exchange.exchange_value }}</span>
+                                        {% else %}
+                                        <span class="badge bg-warning">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if exchange.status == 'pending_review' %}
+                                        <span class="badge bg-warning text-dark">Pending Review</span>
+                                        {% elif exchange.status == 'approved' %}
+                                        <span class="badge bg-success">Approved</span>
+                                        {% elif exchange.status == 'rejected' %}
+                                        <span class="badge bg-danger">Rejected</span>
+                                        {% elif exchange.status == 'quality_check' %}
+                                        <span class="badge bg-info">Quality Check</span>
+                                        {% elif exchange.status == 'completed' %}
+                                        <span class="badge bg-success">Completed</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if exchange.exchangepickup %}
+                                            {% if exchange.exchangepickup.status == 'scheduled' %}
+                                            <span class="badge bg-primary">
+                                                Scheduled for {{ exchange.exchangepickup.pickup_date|date:"d M" }}
+                                                <br>{{ exchange.exchangepickup.time_slot|title }}
+                                            </span>
+                                            {% elif exchange.exchangepickup.status == 'picked_up' %}
+                                            <span class="badge bg-success">Picked Up</span>
+                                            {% endif %}
+                                        {% else %}
+                                        <span class="badge bg-secondary">Not Scheduled</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'admin_exchange_detail' exchange.id %}" 
+                                               class="btn btn-sm btn-primary">View Details</a>
+                                            {% if exchange.status == 'pending_review' %}
+                                            <button type="button" class="btn btn-sm btn-success" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#approveModal{{ exchange.id }}">
+                                                Approve
+                                            </button>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Approve Modal -->
+                                        {% if exchange.status == 'pending_review' %}
+                                        <div class="modal fade" id="approveModal{{ exchange.id }}" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Approve Exchange Request</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <form method="POST" action="{% url 'admin_approve_exchange' exchange.id %}">
+                                                        {% csrf_token %}
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Exchange Value (₹)</label>
+                                                                <input type="number" name="exchange_value" class="form-control" required>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Notes</label>
+                                                                <textarea name="admin_notes" class="form-control" rows="3"></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-success">Approve Exchange</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if exchanges.has_other_pages %}
+                    <nav class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if exchanges.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ exchanges.previous_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">Previous</a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for i in exchanges.paginator.page_range %}
+                            <li class="page-item {% if exchanges.number == i %}active{% endif %}">
+                                <a class="page-link" href="?page={{ i }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">{{ i }}</a>
+                            </li>
+                            {% endfor %}
+                            
+                            {% if exchanges.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ exchanges.next_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">Next</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+
+                    {% else %}
+                    <div class="text-center py-5">
+                        <img src="{% static 'images/no-data.svg' %}" alt="No Exchanges" style="width: 200px; margin-bottom: 20px;">
+                        <h5 class="text-muted">No Exchange Requests Found</h5>
+                        <p class="text-muted mb-0">There are currently no TV exchange requests to display.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

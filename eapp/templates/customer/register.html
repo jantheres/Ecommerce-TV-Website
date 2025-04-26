@@ -1,0 +1,284 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+{% load static %}
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+    }
+    .main-menu a {
+        color: black !important;
+    }
+    .register-container {
+        margin-top: 50px;
+        margin-bottom: 50px;
+    }
+    .register-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        padding: 40px;
+        position: relative;
+    }
+    .register-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, #FF6B6B 0%, #FFE66D 100%);
+    }
+    .register-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .register-header h3 {
+        color: #333;
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    .register-header p {
+        color: #666;
+        font-size: 16px;
+    }
+    .form-group {
+        margin-bottom: 25px;
+        position: relative;
+    }
+    .form-control {
+        height: 50px;
+        border-radius: 10px;
+        border: 2px solid #eee;
+        padding: 10px 20px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+    .form-control:focus {
+        border-color: #FF6B6B;
+        box-shadow: none;
+    }
+    .form-label {
+        position: absolute;
+        top: -10px;
+        left: 15px;
+        background: white;
+        padding: 0 5px;
+        color: #666;
+        font-size: 14px;
+    }
+    .password-toggle {
+        position: relative;
+    }
+    .show-password {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: #666;
+        font-size: 14px;
+        cursor: pointer;
+    }
+    .show-password input {
+        margin: 0;
+    }
+    .btn-register {
+        width: 100%;
+        height: 50px;
+        border-radius: 10px;
+        background: linear-gradient(90deg, #FF6B6B 0%, #FFE66D 100%);
+        border: none;
+        color: white;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+    .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+    }
+    .register-footer {
+        text-align: center;
+        margin-top: 30px;
+    }
+    .register-footer a {
+        color: #FF6B6B;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .register-footer a:hover {
+        color: #FFE66D;
+    }
+    .alert {
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+    .alert-danger {
+        background-color: #fff5f5;
+        border-color: #FF6B6B;
+        color: #FF6B6B;
+    }
+    .requirements {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+    }
+    .requirements ul {
+        margin: 0;
+        padding-left: 20px;
+    }
+    .requirements li {
+        margin-bottom: 3px;
+    }
+</style>
+
+<div class="container register-container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="register-card">
+                <div class="register-header">
+                    <h3>Create Account</h3>
+                    <p>Join our community today!</p>
+                </div>
+                
+                <form method="post" onsubmit="return validateForm()">
+                    {% csrf_token %}
+                    {% for message in messages %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="full-name" name="full-name" required>
+                                <div class="requirements">
+                                    <small>Only alphabets and spaces, max 20 characters</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone-number" name="phone-number" required>
+                                <div class="requirements">
+                                    <small>10 digits only</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="your-email" name="your-email" required>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group password-toggle">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <div class="show-password">
+                                    <input type="checkbox" onclick="togglePasswordVisibility('password')">
+                                    <span>Show</span>
+                                </div>
+                                <div class="requirements">
+                                    <small>Requirements:</small>
+                                    <ul>
+                                        <li>8-12 characters</li>
+                                        <li>At least one special character</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group password-toggle">
+                                <label class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" id="confirm-password" name="confirm-password" required>
+                                <div class="show-password">
+                                    <input type="checkbox" onclick="togglePasswordVisibility('confirm-password')">
+                                    <span>Show</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-register">Create Account</button>
+                </form>
+                
+                <div class="register-footer">
+                    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePasswordVisibility(id) {
+        var x = document.getElementById(id);
+        if (x.type === "password") {
+            x.type = "text";
+        } else {
+            x.type = "password";
+        }
+    }
+
+    function validateForm() {
+        // Validate Full Name
+        var fullName = document.getElementById("full-name").value;
+        var fullNameRegex = /^[a-zA-Z\s]{1,20}$/;
+        if (!fullNameRegex.test(fullName)) {
+            alert("Full Name must contain only alphabets, spaces, and be up to 20 characters long.");
+            return false;
+        }
+
+        // Validate Phone Number
+        var phoneNumber = document.getElementById("phone-number").value;
+        var phoneRegex = /^\d{10}$/;
+        if (!phoneRegex.test(phoneNumber)) {
+            alert("Phone Number must contain exactly 10 digits.");
+            return false;
+        }
+
+        // Validate Email
+        var email = document.getElementById("your-email").value;
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert("Please enter a valid email address.");
+            return false;
+        }
+
+        // Validate Password
+        var password = document.getElementById("password").value;
+        var confirmPassword = document.getElementById("confirm-password").value;
+        var passwordRegex = /^(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,12}$/;
+        
+        if (!passwordRegex.test(password)) {
+            alert("Password must be 8-12 characters long and include at least one special character.");
+            return false;
+        }
+
+        if (password !== confirmPassword) {
+            alert("Passwords do not match!");
+            return false;
+        }
+
+        return true;
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center">
+            <h2 class="mb-0">Technicians</h2>
+            <nav class="ms-3">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">Eapp</a></li>
+                    <li class="breadcrumb-item active">Technicians</li>
+                </ol>
+            </nav>
+        </div>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTechnicianModal">
+            <i class="fas fa-plus"></i> Add technician
+        </button>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <select class="form-select" id="expertiseFilter">
+                <option value="">expertise</option>
+                <option value="TV">TV Service/Maintenance</option>
+                <option value="AC">AC Service/Maintenance</option>
+                <option value="FRIDGE">Refrigerator Service</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" id="availabilityFilter">
+                <option value="">is available</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button class="btn btn-primary" id="searchBtn">Search</button>
+        </div>
+    </div>
+
+    <!-- Bulk Actions -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <select class="form-select" id="bulkAction">
+                <option value="">--------</option>
+                <option value="delete">Delete selected</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button class="btn btn-primary" id="goBtn" disabled>Go</button>
+            <span class="ms-2">0 of 2 selected</span>
+        </div>
+    </div>
+
+    <!-- Technicians Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" id="selectAll">
+                            </th>
+                            <th>Name</th>
+                            <th>User</th>
+                            <th>Phone number</th>
+                            <th>Expertise</th>
+                            <th>Is available</th>
+                            <th>Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tech in technicians %}
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="tech-select" value="{{ tech.id }}">
+                            </td>
+                            <td>{{ tech.name|default:"-" }}</td>
+                            <td>{{ tech.email }}</td>
+                            <td>{{ tech.phone_number }}</td>
+                            <td>{{ tech.get_expertise_display }}</td>
+                            <td>
+                                {% if tech.is_available %}
+                                <i class="fas fa-check-circle text-success"></i>
+                                {% else %}
+                                <i class="fas fa-times-circle text-danger"></i>
+                                {% endif %}
+                            </td>
+                            <td>{{ tech.rating|default:"5.00" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No technicians found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <small class="text-muted">{{ technicians|length }} technician{{ technicians|length|pluralize }}</small>
+    </div>
+</div>
+
+<!-- Add Technician Modal -->
+<div class="modal fade" id="addTechnicianModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Technician</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" name="phone_number" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Expertise</label>
+                        <select class="form-select" name="expertise" required>
+                            <option value="TV">TV Service/Maintenance</option>
+                            <option value="AC">AC Service/Maintenance</option>
+                            <option value="FRIDGE">Refrigerator Service</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Technician</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle select all checkbox
+    const selectAll = document.getElementById('selectAll');
+    const techCheckboxes = document.querySelectorAll('.tech-select');
+    const goBtn = document.getElementById('goBtn');
+    const selectedCount = document.querySelector('.ms-2');
+
+    selectAll.addEventListener('change', function() {
+        techCheckboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+        updateSelectedCount();
+    });
+
+    techCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectedCount);
+    });
+
+    function updateSelectedCount() {
+        const selectedBoxes = document.querySelectorAll('.tech-select:checked').length;
+        selectedCount.textContent = `${selectedBoxes} of ${techCheckboxes.length} selected`;
+        goBtn.disabled = selectedBoxes === 0;
+    }
+
+    // Handle bulk actions
+    document.getElementById('goBtn').addEventListener('click', function() {
+        const action = document.getElementById('bulkAction').value;
+        if (!action) return;
+
+        const selectedIds = Array.from(document.querySelectorAll('.tech-select:checked'))
+            .map(checkbox => checkbox.value);
+
+        if (action === 'delete' && selectedIds.length > 0) {
+            if (confirm('Are you sure you want to delete the selected technicians?')) {
+                // Submit delete request
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{% url "delete_technicians" %}';
+                
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrfmiddlewaretoken';
+                csrfInput.value = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                form.appendChild(csrfInput);
+
+                const idsInput = document.createElement('input');
+                idsInput.type = 'hidden';
+                idsInput.name = 'technician_ids';
+                idsInput.value = selectedIds.join(',');
+                form.appendChild(idsInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

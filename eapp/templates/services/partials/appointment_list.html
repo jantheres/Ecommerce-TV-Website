@@ -1,0 +1,60 @@
+{% if appointments %}
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date & Time</th>
+                <th>Customer</th>
+                <th>Service</th>
+                <th>Technician</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appointment in appointments %}
+            <tr>
+                <td>
+                    {{ appointment.appointment_date|date:"M d, Y" }}<br>
+                    {{ appointment.appointment_time|time:"h:i A" }}
+                </td>
+                <td>
+                    {{ appointment.customer.customer_name }}<br>
+                    <small class="text-muted">{{ appointment.customer.contact_number }}</small>
+                </td>
+                <td>{{ appointment.service.name }}</td>
+                <td>
+                    {% if appointment.technician %}
+                        {{ appointment.technician.name }}
+                        {% if appointment.technician.is_on_leave %}
+                            <span class="badge bg-warning">On Leave</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="text-muted">Not Assigned</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <span class="badge bg-{{ appointment.status|yesno:'success,warning' }}">
+                        {{ appointment.get_status_display }}
+                    </span>
+                </td>
+                <td>
+                    <div class="btn-group">
+                        <a href="{% url 'appointment_detail' appointment.id %}" class="btn btn-sm btn-info">
+                            View
+                        </a>
+                        {% if appointment.status == 'pending' %}
+                        <a href="{% url 'assign_technician' appointment.id %}" class="btn btn-sm btn-primary">
+                            Assign
+                        </a>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p class="text-center text-muted">No appointments found</p>
+{% endif %}

@@ -1,0 +1,469 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<style>
+    .product-details {
+        padding: 60px 0;
+        background-color: #f8f9fa;
+    }
+
+    /* Product Gallery */
+    .product-gallery {
+        background: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .main-image {
+        position: relative;
+        width: 100%;
+        height: 500px;
+        margin-bottom: 20px;
+        border: 1px solid #eee;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .main-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: transform 0.3s ease;
+    }
+
+    .main-image:hover img {
+        transform: scale(1.05);
+    }
+
+    .thumbnail-gallery {
+        display: flex;
+        gap: 10px;
+    }
+
+    .thumbnail {
+        width: 80px;
+        height: 80px;
+        border: 2px solid #eee;
+        border-radius: 4px;
+        cursor: pointer;
+        overflow: hidden;
+        transition: all 0.2s ease;
+    }
+
+    .thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .thumbnail.active {
+        border-color: #007bff;
+    }
+
+    .thumbnail:hover {
+        border-color: #007bff;
+    }
+
+    /* Product Info */
+    .product-info {
+        background: #fff;
+        border-radius: 8px;
+        padding: 30px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .category-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        background-color: #e9ecef;
+        color: #495057;
+        border-radius: 4px;
+        font-size: 0.9em;
+        margin-bottom: 15px;
+    }
+
+    .product-title {
+        font-size: 2em;
+        color: #212529;
+        margin-bottom: 15px;
+        font-weight: 600;
+        line-height: 1.3;
+    }
+
+    .product-price {
+        font-size: 1.8em;
+        color: #007bff;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    .product-description {
+        color: #6c757d;
+        line-height: 1.6;
+        margin-bottom: 25px;
+        padding-bottom: 25px;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .stock-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 4px;
+        margin-bottom: 25px;
+    }
+
+    .in-stock {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .out-of-stock {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    /* Quantity Selector */
+    .quantity-selector {
+        margin-bottom: 25px;
+    }
+
+    .quantity-label {
+        display: block;
+        margin-bottom: 10px;
+        color: #495057;
+        font-weight: 500;
+    }
+
+    .quantity-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        max-width: 200px;
+    }
+
+    .quantity-btn {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        font-size: 1.2em;
+        color: #495057;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .quantity-btn:hover {
+        background-color: #e9ecef;
+        color: #007bff;
+    }
+
+    .quantity-input {
+        width: 60px;
+        height: 40px;
+        text-align: center;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        font-size: 1em;
+        color: #495057;
+    }
+
+    .quantity-input:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    /* Add to Cart Button */
+    .add-to-cart-btn {
+        width: 100%;
+        padding: 15px 25px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 1.1em;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.2s ease;
+    }
+
+    .add-to-cart-btn:hover {
+        background-color: #0056b3;
+    }
+
+    .add-to-cart-btn:disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+    }
+
+    .add-to-cart-btn i {
+        font-size: 1.2em;
+    }
+
+    /* Product Features */
+    .product-features {
+        margin-top: 30px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .feature-item {
+        text-align: center;
+        padding: 20px;
+        background: #fff;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .feature-item i {
+        font-size: 1.5em;
+        color: #007bff;
+        margin-bottom: 10px;
+    }
+
+    .feature-item h4 {
+        font-size: 1em;
+        color: #212529;
+        margin-bottom: 5px;
+    }
+
+    .feature-item p {
+        font-size: 0.9em;
+        color: #6c757d;
+    }
+
+    /* Exchange Option Styles */
+    .exchange-option {
+        padding: 15px;
+        border: 1px dashed #007bff;
+        border-radius: 8px;
+        margin-top: 20px;
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+
+    .exchange-option .btn-outline-primary {
+        border-width: 2px;
+        font-weight: 500;
+        padding: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .exchange-option .btn-outline-primary:hover {
+        background-color: #007bff;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+    }
+
+    .exchange-option .fas {
+        margin-right: 8px;
+    }
+
+    .exchange-option p {
+        margin-bottom: 0;
+        line-height: 1.4;
+    }
+
+    .exchange-option .alert {
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .exchange-option .alert a {
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    .exchange-option .alert a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+        .product-details {
+            padding: 30px 0;
+        }
+
+        .product-gallery {
+            margin-bottom: 30px;
+        }
+
+        .main-image {
+            height: 350px;
+        }
+
+        .product-features {
+            grid-template-columns: 1fr;
+        }
+
+        .product-title {
+            font-size: 1.5em;
+        }
+
+        .product-price {
+            font-size: 1.5em;
+        }
+
+        .exchange-option {
+            margin-top: 15px;
+            padding: 12px;
+        }
+    }
+</style>
+
+<section class="product-details">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="product-gallery">
+                    <div class="main-image">
+                        <img src="{{ product.image_1.url }}" alt="{{ product.name }}" id="mainImage">
+                    </div>
+                    <div class="thumbnail-gallery">
+                        <div class="thumbnail active" onclick="changeImage('{{ product.image_1.url }}', this)">
+                            <img src="{{ product.image_1.url }}" alt="Thumbnail 1">
+                        </div>
+                        {% if product.image_2 %}
+                        <div class="thumbnail" onclick="changeImage('{{ product.image_2.url }}', this)">
+                            <img src="{{ product.image_2.url }}" alt="Thumbnail 2">
+                        </div>
+                        {% endif %}
+                        {% if product.image_3 %}
+                        <div class="thumbnail" onclick="changeImage('{{ product.image_3.url }}', this)">
+                            <img src="{{ product.image_3.url }}" alt="Thumbnail 3">
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="product-info">
+                    <span class="category-badge">{{ product.subcategory }}</span>
+                    <h1 class="product-title">{{ product.name }}</h1>
+                    <div class="product-price">₹{{ product.price }}</div>
+                    <p class="product-description">{{ product.description }}</p>
+                    
+                    {% if product.quantity_in_stock > 0 %}
+                    <div class="stock-status in-stock">
+                        <i class="fas fa-check-circle"></i>
+                        <span>In Stock ({{ product.quantity_in_stock }} available)</span>
+                    </div>
+                    {% else %}
+                    <div class="stock-status out-of-stock">
+                        <i class="fas fa-times-circle"></i>
+                        <span>Out of Stock</span>
+                    </div>
+                    {% endif %}
+
+                    <form action="{% url 'add_to_cart' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                        
+                        <div class="quantity-selector">
+                            <label class="quantity-label">Quantity</label>
+                            <div class="quantity-controls">
+                                <button type="button" class="quantity-btn" onclick="decrementQuantity()">−</button>
+                                <input type="number" name="quantity" value="1" min="1" max="{{ product.quantity_in_stock }}" class="quantity-input" id="quantityInput">
+                                <button type="button" class="quantity-btn" onclick="incrementQuantity()">+</button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="add-to-cart-btn" {% if product.quantity_in_stock == 0 %}disabled{% endif %}>
+                            <i class="fas fa-shopping-cart"></i>
+                            {% if product.quantity_in_stock > 0 %}
+                                Add to Cart
+                            {% else %}
+                                Out of Stock
+                            {% endif %}
+                        </button>
+                    </form>
+
+                    {% if user.is_authenticated and product.quantity_in_stock > 0 %}
+                    <div class="exchange-option mt-3">
+                        <a href="{% url 'initiate_exchange' product.id %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-exchange-alt"></i> Exchange Your Old TV
+                        </a>
+                        <p class="text-muted small mt-2">
+                            <i class="fas fa-info-circle"></i>
+                            Get instant exchange value for your old TV and save on your purchase!
+                        </p>
+                    </div>
+                    {% elif not user.is_authenticated %}
+                    <div class="exchange-option mt-3">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <a href="{% url 'login' %}">Login</a> to use our TV exchange program and save on your purchase!
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="product-features">
+                    <div class="feature-item">
+                        <i class="fas fa-truck"></i>
+                        <h4>Free Shipping</h4>
+                        <p>On orders over ₹500</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-undo"></i>
+                        <h4>Easy Returns</h4>
+                        <p>30 day return policy</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-lock"></i>
+                        <h4>Secure Payment</h4>
+                        <p>100% secure checkout</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function changeImage(src, thumbnail) {
+        const mainImage = document.getElementById('mainImage');
+        mainImage.style.opacity = '0';
+        setTimeout(() => {
+            mainImage.src = src;
+            mainImage.style.opacity = '1';
+        }, 200);
+
+        document.querySelectorAll('.thumbnail').forEach(thumb => {
+            thumb.classList.remove('active');
+        });
+        thumbnail.classList.add('active');
+    }
+
+    function incrementQuantity() {
+        const input = document.getElementById('quantityInput');
+        const max = parseInt(input.max);
+        const currentValue = parseInt(input.value);
+        if (currentValue < max) {
+            input.value = currentValue + 1;
+        }
+    }
+
+    function decrementQuantity() {
+        const input = document.getElementById('quantityInput');
+        const currentValue = parseInt(input.value);
+        if (currentValue > 1) {
+            input.value = currentValue - 1;
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends "base2.html" %}
+
+{% block content %}
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+    }
+
+    .login-container {
+        max-width: 400px;
+        margin: 100px auto;
+        padding: 40px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .login-header h1 {
+        color: #2d3748;
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .login-header p {
+        color: #718096;
+        font-size: 14px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        color: #4a5568;
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 8px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #4776E6;
+        box-shadow: 0 0 0 3px rgba(71, 118, 230, 0.1);
+        outline: none;
+    }
+
+    .btn-login {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 14px rgba(71, 118, 230, 0.2);
+    }
+
+    .error-message {
+        background: #FEE2E2;
+        color: #DC2626;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    .success-message {
+        background: #DEF7EC;
+        color: #057A55;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    .form-footer {
+        text-align: center;
+        margin-top: 30px;
+        color: #718096;
+        font-size: 14px;
+    }
+
+    .form-footer a {
+        color: #4776E6;
+        text-decoration: none;
+    }
+
+    .form-footer a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="login-container">
+    <div class="login-header">
+        <h1>Technician Login</h1>
+        <p>Access your service dashboard</p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="form-group">
+            <label class="form-label">Username or Email</label>
+            <input type="text" name="email" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn-login">Sign In</button>
+    </form>
+
+    <div class="form-footer">
+        <p>Contact administrator if you're having trouble logging in.</p>
+    </div>
+</div>
+{% endblock %}

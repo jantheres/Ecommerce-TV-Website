@@ -1,0 +1,298 @@
+{% extends "base2.html" %}
+
+{% block content %}
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+    }
+
+    .address-container {
+        max-width: 1200px;
+        margin: 50px auto;
+        padding: 0 20px;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .page-title {
+        color: #2d3748;
+        font-size: 32px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .add-address-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        margin-bottom: 40px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .add-address-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+    }
+
+    .card-title {
+        color: #2d3748;
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+    }
+
+    .card-title i {
+        margin-right: 10px;
+        color: #4776E6;
+    }
+
+    .card-description {
+        color: #718096;
+        font-size: 16px;
+        margin-bottom: 25px;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 15px;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 12px 25px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .btn i {
+        margin-right: 8px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 14px rgba(71, 118, 230, 0.2);
+    }
+
+    .btn-secondary {
+        background: linear-gradient(90deg, #43A047 0%, #66BB6A 100%);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 14px rgba(67, 160, 71, 0.2);
+    }
+
+    .address-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 30px;
+        margin-top: 30px;
+    }
+
+    .address-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        position: relative;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .address-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    .address-type {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: #EBF4FF;
+        color: #4776E6;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .address-content {
+        margin-top: 20px;
+    }
+
+    .address-name {
+        font-size: 18px;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 10px;
+    }
+
+    .address-details {
+        color: #718096;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .address-contact {
+        display: flex;
+        align-items: center;
+        margin: 15px 0;
+        color: #718096;
+    }
+
+    .address-contact i {
+        margin-right: 8px;
+        color: #4776E6;
+    }
+
+    .address-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .action-btn {
+        padding: 8px 15px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .action-btn i {
+        margin-right: 5px;
+    }
+
+    .edit-btn {
+        background: #EBF4FF;
+        color: #4776E6;
+    }
+
+    .edit-btn:hover {
+        background: #4776E6;
+        color: white;
+    }
+
+    .delete-btn {
+        background: #FFF5F5;
+        color: #E53E3E;
+    }
+
+    .delete-btn:hover {
+        background: #E53E3E;
+        color: white;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .empty-state i {
+        font-size: 48px;
+        color: #718096;
+        margin-bottom: 20px;
+    }
+
+    .empty-state-text {
+        color: #718096;
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="address-container">
+    <div class="page-header">
+        <h1 class="page-title">My Addresses</h1>
+    </div>
+
+    <div class="add-address-card">
+        <h3 class="card-title">
+            <i class="fas fa-plus-circle"></i>
+            Add New Address
+        </h3>
+        <p class="card-description">Add a new delivery address to your profile for faster checkout.</p>
+        <div class="button-group">
+            <a href="{% url 'address_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                Add New Address
+            </a>
+            <a href="{% url 'checkout' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Back to Checkout
+            </a>
+        </div>
+    </div>
+
+    <div class="address-grid">
+        {% if request.user.customer.address_set.all %}
+            {% for address in request.user.customer.address_set.all %}
+            <div class="address-card">
+                <span class="address-type">Delivery Address</span>
+                <div class="address-content">
+                    <div class="address-name">{{ address.recepient_name }}</div>
+                    <div class="address-contact">
+                        <i class="fas fa-phone"></i>
+                        {{ address.recepient_contact }}
+                    </div>
+                    <div class="address-details">
+                        {{ address.address_line1 }}<br>
+                        {{ address.city }}, {{ address.state }}<br>
+                        {{ address.postal_code }}
+                    </div>
+                    <div class="address-actions">
+                        <a href="{% url 'address_edit' address.id %}" class="action-btn edit-btn">
+                            <i class="fas fa-edit"></i>
+                            Edit
+                        </a>
+                        <a href="{% url 'address_delete' address.id %}" class="action-btn delete-btn" 
+                           onclick="return confirm('Are you sure you want to delete this address?')">
+                            <i class="fas fa-trash-alt"></i>
+                            Delete
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-map-marker-alt"></i>
+                <p class="empty-state-text">No addresses found. Add your first delivery address!</p>
+                <a href="{% url 'address_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Add New Address
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

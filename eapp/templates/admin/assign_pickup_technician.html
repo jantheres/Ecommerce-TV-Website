@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Assign Technician for TV Pickup</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5>Pickup Details</h5>
+                        <table class="table">
+                            <tr>
+                                <th>Customer:</th>
+                                <td>{{ exchange.customer.customer_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>TV:</th>
+                                <td>{{ exchange.brand }} {{ exchange.model }}</td>
+                            </tr>
+                            <tr>
+                                <th>Date:</th>
+                                <td>{{ pickup.pickup_date }}</td>
+                            </tr>
+                            <tr>
+                                <th>Time:</th>
+                                <td>{{ pickup.pickup_time }}</td>
+                            </tr>
+                            <tr>
+                                <th>Address:</th>
+                                <td>{{ pickup.address }}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="technician" class="form-label">Select Technician</label>
+                            <select class="form-select" id="technician" name="technician" required>
+                                <option value="">Choose a technician</option>
+                                {% for tech in technicians %}
+                                <option value="{{ tech.id }}">
+                                    {{ tech.name }} - Rating: {{ tech.rating }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Assign Technician</button>
+                            <a href="{% url 'admin_exchange_detail' exchange.id %}" 
+                               class="btn btn-outline-secondary">Back</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

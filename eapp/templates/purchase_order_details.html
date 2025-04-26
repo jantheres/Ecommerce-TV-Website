@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .dashboard-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .dashboard-btn:hover {
+            background-color: #0056b3;
+        }
+        .purchase-order-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .purchase-order-details {
+            margin-bottom: 20px;
+        }
+        .order-info p {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+        .update-form {
+            margin-top: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        .update-btn, .btn-danger {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .update-btn {
+            background-color: #28a745;
+            color: #fff;
+        }
+        .update-btn:hover {
+            background-color: #218838;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .order-items ul {
+            list-style: none;
+            padding: 0;
+        }
+        .order-items li {
+            margin-bottom: 10px;
+        }
+        .item-container {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 4px;
+        }
+        .item-img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        .item-info p {
+            margin: 0;
+        }
+        .modal-content {
+            border-radius: 8px;
+        }
+        .modal-header {
+            border-bottom: none;
+        }
+        .modal-title {
+            font-size: 18px;
+        }
+        .modal-body {
+            padding-top: 0;
+        }
+        .modal-footer {
+            border-top: none;
+        }
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        .close {
+            border: none;
+            background: none;
+        }
+    </style>
+</head>
+<body>
+    
+    <a href="http://127.0.0.1:8000/seller" class="dashboard-btn">Go to Dashboard</a>
+    <div class="purchase-order-container">
+        <div class="purchase-order-details">
+            <h1>Purchase Order Details</h1>
+            <div class="order-info">
+                <p>Order ID: <span>{{ purchase_order.id }}</span></p>
+                <p>Expected Delivery Date: <span>{{ purchase_order.ExpectedDeliveryDate }}</span></p>
+                <p>Status: <span>{{ purchase_order.Status }}</span></p>
+            </div>
+            <form method="post" class="update-form">
+                {% csrf_token %}
+                {% if purchase_order.Status == 'Delivered' %}
+                <label for="delivery_date">Expected Delivery Date:</label>
+                <input type="date" id="delivery_date" name="delivery_date" value="{{ purchase_order.ExpectedDeliveryDate|date:"Y-m-d" }}" readonly>
+                <div class="form-group">
+                <label for="status">Status:  {{ purchase_order.Status }}</label>
+                </div>
+                {% else %}
+                <div class="form-group">
+                    <label for="delivery_date">Expected Delivery Date:</label>
+                    <input type="date" id="delivery_date" name="delivery_date" value="{{ purchase_order.ExpectedDeliveryDate|date:"Y-m-d" }}">
+                </div>
+                <div class="form-group">
+                    <label for="status">Status:</label>
+                    <select id="status" name="status">
+                        <option value="Pending" {% if purchase_order.Status == 'Pending' %} selected {% endif %}>Pending</option>
+                        <option value="In Progress" {% if purchase_order.Status == 'In Progress' %} selected {% endif %}>In Progress</option>
+                        <option value="Delivered" {% if purchase_order.Status == 'Delivered' %} selected {% endif %}>Delivered</option>
+                    </select>
+                </div>
+                <button type="submit" class="update-btn">Update</button>
+                {% endif %}
+                <!-- Button for rejecting purchase order -->
+                {% if purchase_order.Status == '' and purchase_order.Status != 'Initiated' %}
+                <button type="button" class="btn btn-danger" id="rejectBtn">Reject</button>
+                {% endif %}
+            </form>
+        </div>
+    
+        <div class="order-items">
+            <h2>Order Items:</h2>
+            <ul>
+                {% for item in order_items %}
+                    <li>
+                        <div class="item-container">
+                            <img src="{{ item.Product.image_1.url }}" class="item-img" alt="{{ item.Product.name }}">
+                            <div class="item-info">
+                                <p>{{ item.Product.name }} - Quantity: <span>{{ item.Quantity }}</span></p>
+                                <p>Total Amount: <span>Rs:{{ item.TotalAmount }}</span></p>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    
+    {% if purchase_order.Status == '' and purchase_order.Status != 'Initiated' %}
+    <!-- Popup modal for rejecting purchase order -->
+    <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rejectModalLabel">Reject Purchase Order</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to reject this purchase order?</p>
+                    <textarea id="sellerMessage" class="form-control" placeholder="Enter your message..." rows="4"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" id="confirmRejectBtn">Reject</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // JavaScript for rejecting purchase order
+        $(document).ready(function () {
+            $("#rejectBtn").click(function () {
+                $("#rejectModal").modal("show");
+            });
+
+            $("#confirmRejectBtn").click(function () {
+                var sellerMessage = $("#sellerMessage").val();
+                // Assuming you have a separate URL for rejecting purchase order
+                var rejectUrl = "{% url 'reject_purchase_order' purchase_order.id %}";
+                // Redirect to reject URL with seller message
+                window.location.href = rejectUrl + "?seller_message=" + encodeURIComponent(sellerMessage);
+            });
+        });
+    </script>
+</body>
+</html>

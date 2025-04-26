@@ -1,0 +1,68 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 1200px; margin: 150px auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Product</th>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            {% for item in order.orderitem_set.all %}
+            <tr>
+                {% if forloop.first %}
+                <td rowspan="{{ order.orderitem_set.count }}">#{{ order.id }}</td>
+                <td rowspan="{{ order.orderitem_set.count }}">
+                    <span class="badge {% if order.status == 'Delivered' %}bg-success{% elif order.status == 'Processing' %}bg-warning{% elif order.status == 'Cancelled' %}bg-danger{% else %}bg-info{% endif %}">
+                        {{ order.status }}
+                    </span>
+                </td>
+                <td rowspan="{{ order.orderitem_set.count }}">{{ order.order_date|date:"M d, Y" }}</td>
+                <td rowspan="{{ order.orderitem_set.count }}">₹{{ order.total_amount }}</td>
+                {% endif %}
+                <td>
+                    <img src="{{ item.product.image_1.url }}" alt="{{ item.product.name }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                </td>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>₹{{ item.product.price }}</td>
+                <td>
+                    <div class="d-flex gap-2">
+                        {% if not item.canceled and order.status == 'Pending' %}
+                            <form action="{% url 'cancel_order_item' item.id %}" method="POST" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">CANCEL</button>
+                            </form>
+                        {% elif item.canceled %}
+                            <span class="badge bg-danger">Canceled</span>
+                        {% endif %}
+                        <a href="{% url 'generate_bill_pdf' order.id %}" class="btn btn-success btn-sm">INVOICE</a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

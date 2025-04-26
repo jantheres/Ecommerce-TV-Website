@@ -1,0 +1,121 @@
+{% extends 'services/technician_base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Request Leave</h4>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="start_date" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" required>
+                            <div class="invalid-feedback">Please select a start date.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="end_date" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" required>
+                            <div class="invalid-feedback">Please select an end date.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="reason" class="form-label">Reason for Leave</label>
+                            <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+                            <div class="invalid-feedback">Please provide a reason for your leave request.</div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Submit Request
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leave History -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Leave History</h4>
+                </div>
+                <div class="card-body">
+                    {% if leave_history %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Dates</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for leave in leave_history %}
+                                    <tr>
+                                        <td>
+                                            {{ leave.start_date|date:"M d, Y" }} - {{ leave.end_date|date:"M d, Y" }}
+                                            <br>
+                                            <small class="text-muted">{{ leave.reason|truncatechars:30 }}</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{% if leave.status == 'approved' %}success{% elif leave.status == 'rejected' %}danger{% else %}warning{% endif %}">
+                                                {{ leave.status|title }}
+                                            </span>
+                                            {% if leave.admin_remarks %}
+                                            <br>
+                                            <small class="text-muted">{{ leave.admin_remarks|truncatechars:30 }}</small>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">No leave history found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Form validation
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+
+// Date validation
+document.getElementById('start_date').addEventListener('change', function() {
+    document.getElementById('end_date').min = this.value;
+});
+
+var today = new Date().toISOString().split('T')[0];
+document.getElementById('start_date').min = today;
+document.getElementById('end_date').min = today;
+</script>
+{% endblock %}
